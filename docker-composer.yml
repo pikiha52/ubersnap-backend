@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbit_server'
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+
+  ubsersnap-backend-test:
+    container_name: ubsersnap_backend_test
+    build:
+      context: ./ubsersnap-backend-test
+      dockerfile: Dockerfile
+    volumes:
+      - ./ubsersnap-backend-test:/app
+      - /app/node_modules
+    ports:
+      - 3030:3030
+    depends_on:
+      - rabbitmq
+    restart: on-failure
